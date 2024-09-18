@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <title>{{ ticker }} 株価詳細</title>
+</head>
+<body>
+    <h1>{{ ticker }} 株価詳細</h1>
+
+    <p>最新価格: {{ latest_price }}</p>
+
+    <h2>株価履歴</h2>
+    <form method="get">
+        <label for="start_date">開始日:</label>
+        <input type="date" id="start_date" name="start_date">
+
+        <label for="end_date">終了日:</label>
+        <input type="date" id="end_date" name="end_date">
+
+        <button type="submit">データを取得</button>
+    </form>
+
+    {% if stock_data %}
+        <h3>Yahoo Finance 株価データ</h3>
+        {{ stock_data|safe }}
+    {% else %}
+        <p>データがありません。</p>
+    {% endif %}
+
+    <h3>履歴データベース</h3>
+    <table>
+        <tr>
+            <th>日付</th>
+            <th>価格</th>
+        </tr>
+        {% for entry in history %}
+        <tr>
+            <td>{{ entry.date }}</td>
+            <td>{{ entry.price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

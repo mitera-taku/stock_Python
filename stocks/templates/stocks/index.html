@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Visualization</title>
+</head>
+
+<body>
+    <h1>株式リスト</h1>
+    <ul>
+        {% for stock in stocks %}
+        <li>
+            <a href="{% url 'stocks:stock_detail' stock.code %}">
+                {{ stock.name }} ({{ stock.code }})
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+
+</html>
