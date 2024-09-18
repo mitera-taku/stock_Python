@@ -1,26 +1,51 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Stock, StockHistory
+from django.shortcuts import render
 import pandas as pd
 import yfinance as yf  # type: ignore
 from datetime import datetime, timedelta
 
 # トップページのビュー
 def index_view(request):
-    # 全ての株式データを取得してテンプレートに渡す
-    stocks = Stock.objects.all()
+    # 有名企業のティッカーシンボルと名前をハードコード
+    stocks = [
+        {'name': 'Apple', 'code': 'AAPL'},
+        {'name': 'Google', 'code': 'GOOGL'},
+        {'name': 'Microsoft', 'code': 'MSFT'},
+        {'name': 'Amazon', 'code': 'AMZN'},
+        {'name': 'Facebook (Meta)', 'code': 'META'},
+        {'name': 'Tesla', 'code': 'TSLA'},
+        {'name': 'NVIDIA', 'code': 'NVDA'},
+        {'name': 'Berkshire Hathaway', 'code': 'BRK-B'},
+        {'name': 'Visa', 'code': 'V'},
+        {'name': 'Johnson & Johnson', 'code': 'JNJ'},
+        {'name': 'JPMorgan Chase', 'code': 'JPM'},
+        {'name': 'Procter & Gamble', 'code': 'PG'},
+        {'name': 'Walmart', 'code': 'WMT'},
+        {'name': 'Mastercard', 'code': 'MA'},
+        {'name': 'Disney', 'code': 'DIS'},
+        {'name': 'Pfizer', 'code': 'PFE'},
+        {'name': 'Coca-Cola', 'code': 'KO'},
+        {'name': 'PepsiCo', 'code': 'PEP'},
+        {'name': 'Intel', 'code': 'INTC'},
+        {'name': 'Cisco', 'code': 'CSCO'},
+        {'name': 'Verizon', 'code': 'VZ'},
+        {'name': 'AT&T', 'code': 'T'},
+        {'name': 'ExxonMobil', 'code': 'XOM'},
+        {'name': 'Chevron', 'code': 'CVX'},
+        {'name': 'McDonald\'s', 'code': 'MCD'},
+        {'name': 'Nike', 'code': 'NKE'},
+        {'name': 'Starbucks', 'code': 'SBUX'},
+        {'name': 'IBM', 'code': 'IBM'},
+        {'name': 'Adobe', 'code': 'ADBE'},
+        {'name': 'Netflix', 'code': 'NFLX'}
+    ]
     context = {
         'stocks': stocks,
     }
     return render(request, 'stocks/index.html', context)
 
+
 # 株価詳細ページのビュー（detail.htmlを使用）
 def stock_detail_view(request, ticker):
-    # 指定された株式コードで株式を取得し、見つからなければ404エラーを返す
-    stock = get_object_or_404(Stock, code=ticker)
-
-    # 株式の履歴データを取得し、日付の降順でソート
-    history = StockHistory.objects.filter(stock=stock).order_by('-date')
-
     # Yahoo Finance から株価データを取得
     try:
         start_date_str = request.GET.get('start_date', (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d'))
@@ -34,16 +59,18 @@ def stock_detail_view(request, ticker):
         start_date = datetime.now() - timedelta(days=30)
         end_date = datetime.now()
 
-    # Yahoo Finance API を使って株価を取得
-    df = fetch_stock_data(stock.code, start_date, end_date)
+    # Yahoo Finance API を使って株価データを取得
+    df = fetch_stock_data(ticker, start_date, end_date)
+
+    # 最新の終値を取得
+    latest_price = df[ticker].iloc[-1] if not df.empty else 'データなし'
 
     context = {
-        'ticker': stock.code,
-        'latest_price': stock.latest_price,
-        'history': history,
+        'ticker': ticker,
+        'latest_price': latest_price,
         'stock_data': df.to_html() if not df.empty else None,  # DataFrame を HTML に変換して渡す
     }
-    return render(request, 'detail.html', context)  # テンプレートをdetail.htmlに変更
+    return render(request, 'detail.html', context)
 
 # 株価データ取得関数
 def fetch_stock_data(ticker_symbol, start_date, end_date):
