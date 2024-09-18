@@ -6,8 +6,10 @@
 <body>
     <h1>{{ ticker }} 株価詳細</h1>
 
+    <!-- 最新の株価の表示 -->
     <p>最新価格: {{ latest_price }}</p>
 
+    <!-- 株価履歴の表示 -->
     <h2>株価履歴</h2>
     <form method="get">
         <label for="start_date">開始日:</label>
@@ -19,25 +21,57 @@
         <button type="submit">データを取得</button>
     </form>
 
+    <!-- Yahoo Finance からの株価データ表示 -->
     {% if stock_data %}
         <h3>Yahoo Finance 株価データ</h3>
-        {{ stock_data|safe }}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>日付</th>
+                    <th>始値</th>
+                    <th>高値</th>
+                    <th>安値</th>
+                    <th>終値</th>
+                    <th>出来高</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in stock_data %}
+                <tr>
+                    <td>{{ record.Date }}</td>
+                    <td>{{ record.Open }}</td>
+                    <td>{{ record.High }}</td>
+                    <td>{{ record.Low }}</td>
+                    <td>{{ record.Close }}</td>
+                    <td>{{ record.Volume }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     {% else %}
         <p>データがありません。</p>
     {% endif %}
 
+    <!-- データベース内の履歴データ表示 -->
     <h3>履歴データベース</h3>
     <table>
-        <tr>
-            <th>日付</th>
-            <th>価格</th>
-        </tr>
-        {% for entry in history %}
-        <tr>
-            <td>{{ entry.date }}</td>
-            <td>{{ entry.price }}</td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>日付</th>
+                <th>価格</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in history %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
+
+    <!-- 戻るボタン -->
+    <a href="{% url 'stocks:index' %}">トップページへ戻る</a>
 </body>
 </html>

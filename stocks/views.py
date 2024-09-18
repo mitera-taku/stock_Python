@@ -13,7 +13,7 @@ def index_view(request):
     }
     return render(request, 'stocks/index.html', context)
 
-# 株価詳細ページのビュー
+# 株価詳細ページのビュー（detail.htmlを使用）
 def stock_detail_view(request, ticker):
     # 指定された株式コードで株式を取得し、見つからなければ404エラーを返す
     stock = get_object_or_404(Stock, code=ticker)
@@ -43,7 +43,7 @@ def stock_detail_view(request, ticker):
         'history': history,
         'stock_data': df.to_html() if not df.empty else None,  # DataFrame を HTML に変換して渡す
     }
-    return render(request, 'stocks/detail.html', context)
+    return render(request, 'detail.html', context)  # テンプレートをdetail.htmlに変更
 
 # 株価データ取得関数
 def fetch_stock_data(ticker_symbol, start_date, end_date):

@@ -11,6 +11,7 @@
     <ul>
         {% for stock in stocks %}
         <li>
+            <!-- detail.htmlへのリンクを追加 -->
             <a href="{% url 'stocks:stock_detail' stock.code %}">
                 {{ stock.name }} ({{ stock.code }})
             </a>
