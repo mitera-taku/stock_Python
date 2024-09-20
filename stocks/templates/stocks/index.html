@@ -1,23 +1,43 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
-    <title>Stock Visualization</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>株価情報検索</title>
+    
+    <!-- static タグを使用するために、ここでロード -->
+    {% load static %}
+    
+    <!-- CSSファイルを読み込む -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
-
 <body>
-    <h1>株式リスト</h1>
-    <ul>
-        {% for stock in stocks %}
-        <li>
-            <!-- detail.htmlへのリンクを追加 -->
-            <a href="{% url 'stocks:stock_detail' stock.code %}">
-                {{ stock.name }} ({{ stock.code }})
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-</body>
 
+<div class="container">
+    <h1>株価情報検索</h1>
+
+    <!-- エラーメッセージの表示 -->
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <!-- 株価検索フォーム -->
+    <form method="post" action="{% url 'stocks:stock_detail' 'AAPL' %}">
+        {% csrf_token %}
+        <label for="stock_symbol">企業コードを入力してください:</label>
+        <input type="text" id="stock_symbol" name="stock_symbol" required>
+
+        <label for="start_date">開始日:</label>
+        <input type="date" id="start_date" name="start_date" required>
+
+        <label for="end_date">終了日:</label>
+        <input type="date" id="end_date" name="end_date" required>
+
+        <button type="submit">予測する</button>
+    </form>
+
+    <a href="{% url 'stocks:index' %}">戻る</a>
+</div>
+
+</body>
 </html>

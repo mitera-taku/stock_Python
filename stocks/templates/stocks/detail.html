@@ -1,77 +1,29 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <title>{{ ticker }} 株価詳細</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>株価情報</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
-    <h1>{{ ticker }} 株価詳細</h1>
 
-    <!-- 最新の株価の表示 -->
-    <p>最新価格: {{ latest_price }}</p>
+<div class="container">
+    <h1>{{ stock_symbol }} の株価情報 ({{ start_date }} から {{ end_date }}まで)</h1>
 
-    <!-- 株価履歴の表示 -->
-    <h2>株価履歴</h2>
-    <form method="get">
-        <label for="start_date">開始日:</label>
-        <input type="date" id="start_date" name="start_date">
+    <!-- AI予測値の表示 -->
+    <div class="prediction-box">
+        <h2>AI予測値</h2>
+        <p>予測された次の日の終値: <strong>{{ predicted_price }}</strong></p>
+    </div>
 
-        <label for="end_date">終了日:</label>
-        <input type="date" id="end_date" name="end_date">
-
-        <button type="submit">データを取得</button>
-    </form>
-
-    <!-- Yahoo Finance からの株価データ表示 -->
-    {% if stock_data %}
-        <h3>Yahoo Finance 株価データ</h3>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>日付</th>
-                    <th>始値</th>
-                    <th>高値</th>
-                    <th>安値</th>
-                    <th>終値</th>
-                    <th>出来高</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for record in stock_data %}
-                <tr>
-                    <td>{{ record.Date }}</td>
-                    <td>{{ record.Open }}</td>
-                    <td>{{ record.High }}</td>
-                    <td>{{ record.Low }}</td>
-                    <td>{{ record.Close }}</td>
-                    <td>{{ record.Volume }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p>データがありません。</p>
-    {% endif %}
-
-    <!-- データベース内の履歴データ表示 -->
-    <h3>履歴データベース</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>日付</th>
-                <th>価格</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for entry in history %}
-            <tr>
-                <td>{{ entry.date }}</td>
-                <td>{{ entry.price }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <!-- 株価データの表示 -->
+    <h2>株価データ</h2>
+    {{ stock_data | safe }}
 
     <!-- 戻るボタン -->
-    <a href="{% url 'stocks:index' %}">トップページへ戻る</a>
+    <a href="{% url 'stocks:index' %}">戻る</a>
+</div>
+
 </body>
 </html>
