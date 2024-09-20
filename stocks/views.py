@@ -6,6 +6,7 @@ import math
 from datetime import datetime
 from tensorflow.keras.models import Sequential  # type: ignore
 from tensorflow.keras.layers import LSTM, Dense  # type: ignore
+from django.shortcuts import render
 
 # トップページのビュー
 def index_view(request):
@@ -95,3 +96,10 @@ def get_stock_data(request, ticker=None):
         'end_date': end_date
     }
     return render(request, 'stocks/detail.html', context)
+
+
+# 株価の詳細ページのビュー
+def stock_detail_view(request, ticker):
+    # get_stock_data 関数を呼び出して、株価データを取得する
+    return get_stock_data(request, ticker=ticker)
+

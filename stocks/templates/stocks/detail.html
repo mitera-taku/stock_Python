@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>株価情報</title>
+    {% load static %}
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
@@ -18,11 +19,9 @@
     </div>
 
     <!-- 株価データの表示 -->
-    <h2>株価データ</h2>
-    {{ stock_data | safe }}
-
-    <!-- 戻るボタン -->
-    <a href="{% url 'stocks:index' %}">戻る</a>
+    <div class="stock-data-box">
+        {{ stock_data|safe }}
+    </div>
 </div>
 
 </body>
