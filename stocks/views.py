@@ -3,10 +3,33 @@ import pandas as pd  # type: ignore
 import yfinance as yf  # type: ignore
 import numpy as np
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 from tensorflow.keras.models import Sequential  # type: ignore
 from tensorflow.keras.layers import LSTM, Dense  # type: ignore
-from django.shortcuts import render
+import plotly.graph_objs as go # type: ignore
+import plotly.offline as pyo # type: ignore
+
+# インタラクティブなグラフの作成
+def plot_interactive_graph(stock_data):
+    fig = go.Figure()
+
+    # Open, Close, High, Low データの追加
+    fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Open'], mode='lines', name='Open Price'))
+    fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Close Price'))
+    fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Low'], mode='lines', name='Low Price'))
+    fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['High'], mode='lines', name='High Price'))
+
+    fig.update_layout(
+        title='Stock Prices',
+        xaxis_title='Date',
+        yaxis_title='Price',
+        showlegend=True  # レジェンド（凡例）を表示
+    )
+
+    # HTML形式で出力
+    graph_html = pyo.plot(fig, include_plotlyjs=False, output_type='div')
+    return graph_html
+
 
 # トップページのビュー
 def index_view(request):
@@ -22,7 +45,15 @@ def index_view(request):
         {'name': 'Visa', 'code': 'V'},
         {'name': 'Johnson & Johnson', 'code': 'JNJ'},
     ]
-    context = {'stocks': stocks}
+    # デフォルトの日付を設定（60日前から今日まで）
+    end_date_default = datetime.today().strftime('%Y-%m-%d')
+    start_date_default = (datetime.today() - timedelta(days=60)).strftime('%Y-%m-%d')
+
+    context = {
+        'stocks': stocks,
+        'start_date_default': start_date_default,
+        'end_date_default': end_date_default
+    }
     return render(request, 'stocks/index.html', context)
 
 # 株価データ取得とAI予測値の計算
@@ -88,18 +119,25 @@ def get_stock_data(request, ticker=None):
     # 予測結果を小数点2位で切り上げ
     rounded_price = math.ceil(predicted_price[0][0] * 100) / 100
 
+    # 前日比の計算
+    previous_close = stock_data['Close'].iloc[-2] if len(stock_data) > 1 else 0
+    change_today = stock_data['Close'].iloc[-1] - previous_close
+
+    # インタラクティブグラフの生成
+    graph_html = plot_interactive_graph(stock_data)
+
     context = {
         'stock_symbol': ticker,
         'predicted_price': rounded_price,  # AI予測値
+        'change_today': round(change_today, 2),  # 前日比
         'stock_data': stock_data.to_html(classes="table table-striped"),
+        'graph_html': graph_html,  # グラフHTML
         'start_date': start_date,
         'end_date': end_date
     }
     return render(request, 'stocks/detail.html', context)
 
-
 # 株価の詳細ページのビュー
 def stock_detail_view(request, ticker):
     # get_stock_data 関数を呼び出して、株価データを取得する
     return get_stock_data(request, ticker=ticker)
-

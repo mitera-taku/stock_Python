@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>株価情報</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>  <!-- PlotlyのJSを読み込む -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
 
@@ -18,9 +19,21 @@
         <p>予測された次の日の終値: <strong>{{ predicted_price }}</strong></p>
     </div>
 
+    <!-- 前日比の表示 -->
+    <div class="change-box">
+        <h2>前日比</h2>
+        <p>前日の終値からの変動: {{ change_today|floatformat:2 }}円</p>
+    </div>
+
     <!-- 株価データの表示 -->
     <div class="stock-data-box">
         {{ stock_data|safe }}
+    </div>
+
+    <!-- インタラクティブグラフの表示 -->
+    <div class="graph-box">
+        <h2>Bid/Ask 価格のグラフ</h2>
+        {{ graph_html|safe }}  <!-- Safeフィルターを使用 -->
     </div>
 </div>
 
