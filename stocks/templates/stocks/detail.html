@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>株価情報</title>
-    {% load static %}
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>  <!-- PlotlyのJSを読み込む -->
+    {% load static %}  <!-- staticファイルを使うために必要 -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
@@ -35,6 +35,7 @@
         <h2>Bid/Ask 価格のグラフ</h2>
         {{ graph_html|safe }}  <!-- Safeフィルターを使用 -->
     </div>
+    
 </div>
 
 </body>

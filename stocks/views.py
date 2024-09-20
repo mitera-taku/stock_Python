@@ -6,8 +6,8 @@ import math
 from datetime import datetime, timedelta
 from tensorflow.keras.models import Sequential  # type: ignore
 from tensorflow.keras.layers import LSTM, Dense  # type: ignore
-import plotly.graph_objs as go # type: ignore
-import plotly.offline as pyo # type: ignore
+import plotly.graph_objs as go  # type: ignore
+import plotly.offline as pyo  # type: ignore
 
 # インタラクティブなグラフの作成
 def plot_interactive_graph(stock_data):
@@ -45,9 +45,9 @@ def index_view(request):
         {'name': 'Visa', 'code': 'V'},
         {'name': 'Johnson & Johnson', 'code': 'JNJ'},
     ]
-    # デフォルトの日付を設定（60日前から今日まで）
+    # デフォルトの日付を設定（90日前から今日まで）
     end_date_default = datetime.today().strftime('%Y-%m-%d')
-    start_date_default = (datetime.today() - timedelta(days=60)).strftime('%Y-%m-%d')
+    start_date_default = (datetime.today() - timedelta(days=90)).strftime('%Y-%m-%d')
 
     context = {
         'stocks': stocks,
@@ -85,10 +85,10 @@ def get_stock_data(request, ticker=None):
     data = stock_data['Close'].values.reshape(-1, 1)
 
     # AI用データセットの作成
-    def create_dataset(data, time_steps=1):
+    def create_dataset(data, time_steps=60):
         X, y = [], []
-        for i in range(len(data) - time_steps - 1):
-            X.append(data[i:(i + time_steps), 0])
+        for i in range(len(data) - time_steps):
+            X.append(data[i:i + time_steps, 0])
             y.append(data[i + time_steps, 0])
         return np.array(X), np.array(y)
 
@@ -122,6 +122,13 @@ def get_stock_data(request, ticker=None):
     # 前日比の計算
     previous_close = stock_data['Close'].iloc[-2] if len(stock_data) > 1 else 0
     change_today = stock_data['Close'].iloc[-1] - previous_close
+
+    # 前日比の表示用に「+」または「-」を付ける
+    if change_today > 0:
+        change_today_display = f"+{round(change_today, 2)}円"
+    else:
+        change_today_display = f"{round(change_today, 2)}円"
+
 
     # インタラクティブグラフの生成
     graph_html = plot_interactive_graph(stock_data)
