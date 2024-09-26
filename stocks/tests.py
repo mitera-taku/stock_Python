@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.test import TestCase
 import pandas as pd  # type: ignore
 import yfinance as yf  # type: ignore
 import numpy as np
@@ -73,7 +72,7 @@ def get_stock_data(request, ticker=None):
     if stock_data.empty:
         return render(request, 'stocks/index.html', {'error': '指定された日付範囲でデータが見つかりません。'})
 
-    stock_data = stock_data[['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']].fillna(method='ffill')
+    stock_data = stock_data[['Open', 'High', 'Low', 'Close', 'Adj Close', 'Volume']].ffill()
     data = stock_data['Close'].values.reshape(-1, 1)
 
     def create_dataset(data, time_steps=60):
