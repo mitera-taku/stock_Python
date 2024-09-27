@@ -65,6 +65,14 @@ bash
 コードをコピーする
 python manage.py runserver
 使用技術
+
+画面
+![image](https://github.com/user-attachments/assets/ebf69948-2735-4a65-968f-01d87adf2e06)
+
+![image](https://github.com/user-attachments/assets/26252870-67f3-4bee-8591-7ed4bc1c1c05)
+
+![image](https://github.com/user-attachments/assets/76a64294-d517-4f69-8eac-b4925f1df9ba)
+
 Python 3.x
 Django 4.x
 SQLite（デフォルトのデータベース）
