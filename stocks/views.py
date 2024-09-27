@@ -45,9 +45,9 @@ def index_view(request):
         {'name': 'Visa', 'code': 'V'},
         {'name': 'Johnson & Johnson', 'code': 'JNJ'},
     ]
-    # デフォルトの日付を設定（90日前から今日まで）
-    end_date_default = datetime.today().strftime('%Y-%m-%d')
-    start_date_default = (datetime.today() - timedelta(days=100)).strftime('%Y-%m-%d')
+ # 昨日の日付をデフォルトに設定
+    end_date_default = (datetime.today() - timedelta(days=1)).strftime('%Y-%m-%d')
+    start_date_default = (datetime.today() - timedelta(days=101)).strftime('%Y-%m-%d')
 
     context = {
         'stocks': stocks,
