@@ -47,7 +47,7 @@ def index_view(request):
     ]
     # デフォルトの日付を設定（90日前から今日まで）
     end_date_default = datetime.today().strftime('%Y-%m-%d')
-    start_date_default = (datetime.today() - timedelta(days=90)).strftime('%Y-%m-%d')
+    start_date_default = (datetime.today() - timedelta(days=100)).strftime('%Y-%m-%d')
 
     context = {
         'stocks': stocks,
