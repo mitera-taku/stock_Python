@@ -9,8 +9,8 @@ from tensorflow.keras.layers import LSTM, Dense  # type: ignore
 import plotly.graph_objs as go  # type: ignore
 import plotly.offline as pyo  # type: ignore
 
-# インタラクティブなグラフの作成
-def plot_interactive_graph(stock_data):
+# 予測結果をグラフに表示するための関数の修正
+def plot_interactive_graph(stock_data, predicted_price):
     fig = go.Figure()
 
     # Open, Close, High, Low データの追加
@@ -18,6 +18,12 @@ def plot_interactive_graph(stock_data):
     fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Close Price'))
     fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Low'], mode='lines', name='Low Price'))
     fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['High'], mode='lines', name='High Price'))
+
+    # 予測値の追加
+    last_date = stock_data.index[-1] + timedelta(days=1)  # 予測日の設定
+    fig.add_trace(go.Scatter(x=[last_date], y=[predicted_price], mode='markers+text', 
+                             name='Predicted Price', text=[f'予測: {predicted_price}円'],
+                             textposition='top center', marker=dict(size=10, color='red')))
 
     fig.update_layout(
         title='Stock Prices',
@@ -129,9 +135,11 @@ def get_stock_data(request, ticker=None):
     else:
         change_today_display = f"{round(change_today, 2)}円"
 
+ # 予測結果を計算する部分
+    rounded_price = math.ceil(predicted_price[0][0] * 100) / 100
 
-    # インタラクティブグラフの生成
-    graph_html = plot_interactive_graph(stock_data)
+    # インタラクティブグラフの生成（予測値を渡す）
+    graph_html = plot_interactive_graph(stock_data, rounded_price)
 
     context = {
         'stock_symbol': ticker,
