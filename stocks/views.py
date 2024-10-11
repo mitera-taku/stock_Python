@@ -8,6 +8,9 @@ from tensorflow.keras.models import Sequential  # type: ignore
 from tensorflow.keras.layers import LSTM, Dense  # type: ignore
 import plotly.graph_objs as go  # type: ignore
 import plotly.offline as pyo  # type: ignore
+import openai
+from django.shortcuts import render
+from django.conf import settings
 
 # 予測結果をグラフに表示するための関数の修正
 def plot_interactive_graph(stock_data, predicted_price):
@@ -156,3 +159,28 @@ def get_stock_data(request, ticker=None):
 def stock_detail_view(request, ticker):
     # get_stock_data 関数を呼び出して、株価データを取得する
     return get_stock_data(request, ticker=ticker)
+
+
+# OpenAIのAPIキーを設定
+openai.api_key = settings.OPENAI_API_KEY
+
+def chatgpt_consultation(request):
+    response_text = ""
+    if request.method == "POST":
+        user_input = request.POST.get("user_input")
+        if user_input:
+            try:
+                # ChatGPT APIを呼び出して応答を取得
+                response = openai.Completion.create(
+                    engine="text-davinci-003",
+                    prompt=user_input,
+                    max_tokens=150,
+                    temperature=0.7,
+                )
+                response_text = response.choices[0].text.strip()
+            except Exception as e:
+                response_text = f"エラーが発生しました: {str(e)}"
+
+    return render(request, "chatgpt_consultation.html", {"response_text": response_text})
+
+

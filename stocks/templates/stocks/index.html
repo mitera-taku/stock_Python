@@ -33,6 +33,13 @@
     </form>
 
     <a href="{% url 'stocks:index' %}">戻る</a>
+
+    <!-- チャットGPTへの相談リンクを追加 -->
+    <div class="consult-button-box">
+        <a href="{% url 'stocks:chatgpt_consultation' %}">
+            <button>チャットGPTへ相談する</button>
+        </a>
+    </div>
 </div>
 
 </body>

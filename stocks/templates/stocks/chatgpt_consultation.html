@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>チャットGPTへ相談</title>
+</head>
+
+<body>
+    <h1>相談内容</h1>
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="user_input" rows="5" cols="40" placeholder="質問を入力してください"></textarea>
+        <br>
+        <button type="submit">送信</button>
+    </form>
+    <br>
+    {% if response_text %}
+    <div>
+        <h2>チャットGPTの答え</h2>
+        <p>{{ response_text }}</p>
+    </div>
+    {% endif %}
+</body>
+
+</html>
