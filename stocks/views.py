@@ -164,23 +164,25 @@ def stock_detail_view(request, ticker):
 # OpenAIのAPIキーを設定
 openai.api_key = settings.OPENAI_API_KEY
 
-def chatgpt_consultation(request):
-    response_text = ""
-    if request.method == "POST":
-        user_input = request.POST.get("user_input")
+def chatgpt_consultation_view(request):
+    response_text = None
+    if request.method == 'POST':
+        user_input = request.POST.get('user_input', '')
+
         if user_input:
             try:
-                # ChatGPT APIを呼び出して応答を取得
-                response = openai.Completion.create(
-                    engine="text-davinci-003",
-                    prompt=user_input,
-                    max_tokens=150,
-                    temperature=0.7,
+                # `gpt-3.5-turbo`モデルを使用
+                response = openai.chat.completions.create(
+                    model="gpt-3.5-turbo",  # `gpt-4`の代わりに`gpt-3.5-turbo`を指定
+                    messages=[
+                        {"role": "user", "content": user_input}
+                    ]
                 )
-                response_text = response.choices[0].text.strip()
+                response_text = response['choices'][0]['message']['content']
             except Exception as e:
                 response_text = f"エラーが発生しました: {str(e)}"
 
-    return render(request, "chatgpt_consultation.html", {"response_text": response_text})
+    return render(request, 'stocks/chatgpt_consultation.html', {'response_text': response_text})
+
 
 
