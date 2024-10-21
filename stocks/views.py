@@ -8,9 +8,12 @@ from tensorflow.keras.models import Sequential  # type: ignore
 from tensorflow.keras.layers import LSTM, Dense  # type: ignore
 import plotly.graph_objs as go  # type: ignore
 import plotly.offline as pyo  # type: ignore
+import openai
+from django.shortcuts import render
+from django.conf import settings
 
-# インタラクティブなグラフの作成
-def plot_interactive_graph(stock_data):
+# 予測結果をグラフに表示するための関数の修正
+def plot_interactive_graph(stock_data, predicted_price):
     fig = go.Figure()
 
     # Open, Close, High, Low データの追加
@@ -18,6 +21,12 @@ def plot_interactive_graph(stock_data):
     fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='Close Price'))
     fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Low'], mode='lines', name='Low Price'))
     fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['High'], mode='lines', name='High Price'))
+
+    # 予測値の追加
+    last_date = stock_data.index[-1] + timedelta(days=1)  # 予測日の設定
+    fig.add_trace(go.Scatter(x=[last_date], y=[predicted_price], mode='markers+text', 
+                             name='Predicted Price', text=[f'予測: {predicted_price}円'],
+                             textposition='top center', marker=dict(size=10, color='red')))
 
     fig.update_layout(
         title='Stock Prices',
@@ -129,9 +138,11 @@ def get_stock_data(request, ticker=None):
     else:
         change_today_display = f"{round(change_today, 2)}円"
 
+ # 予測結果を計算する部分
+    rounded_price = math.ceil(predicted_price[0][0] * 100) / 100
 
-    # インタラクティブグラフの生成
-    graph_html = plot_interactive_graph(stock_data)
+    # インタラクティブグラフの生成（予測値を渡す）
+    graph_html = plot_interactive_graph(stock_data, rounded_price)
 
     context = {
         'stock_symbol': ticker,
@@ -148,3 +159,30 @@ def get_stock_data(request, ticker=None):
 def stock_detail_view(request, ticker):
     # get_stock_data 関数を呼び出して、株価データを取得する
     return get_stock_data(request, ticker=ticker)
+
+
+# OpenAIのAPIキーを設定
+openai.api_key = settings.OPENAI_API_KEY
+
+def chatgpt_consultation_view(request):
+    response_text = None
+    if request.method == 'POST':
+        user_input = request.POST.get('user_input', '')
+
+        if user_input:
+            try:
+                # `gpt-3.5-turbo`モデルを使用
+                response = openai.chat.completions.create(
+                    model="gpt-3.5-turbo",  # `gpt-4`の代わりに`gpt-3.5-turbo`を指定
+                    messages=[
+                        {"role": "user", "content": user_input}
+                    ]
+                )
+                response_text = response['choices'][0]['message']['content']
+            except Exception as e:
+                response_text = f"エラーが発生しました: {str(e)}"
+
+    return render(request, 'stocks/chatgpt_consultation.html', {'response_text': response_text})
+
+
+

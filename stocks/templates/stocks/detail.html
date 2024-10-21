@@ -40,6 +40,13 @@
     <div class="back-button-box">
         <button onclick="window.history.back()">戻る</button>  <!-- 戻るボタン -->
     </div>
+
+    <!-- チャットGPTへの相談リンクを追加 -->
+    <div class="consult-button-box">
+        <a href="{% url 'stocks:chatgpt_consultation' %}">
+            <button>チャットGPTへ相談する</button>
+        </a>
+    </div>
 </div>
 
 </body>
