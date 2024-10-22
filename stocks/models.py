@@ -19,3 +19,13 @@ class StockHistory(models.Model):
 
     def __str__(self):
         return f"{self.stock.name} on {self.date}"
+    
+class TodoItem(models.Model):
+    # title = models.CharField(max_length=255)
+    # description = models.TextField(blank=True)
+    # is_completed = models.BooleanField(default=False)
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.title

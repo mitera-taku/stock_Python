@@ -1,0 +1,17 @@
+-- データベースを作成（必要に応じて）
+CREATE DATABASE new_todo_db;
+
+-- データベースを選択（PGAdmin上で実行する場合は、適切なデータベースを選択してください）
+\c todo_db;
+
+-- TODOリスト用のテーブルを作成
+CREATE TABLE todo_items (
+    id SERIAL PRIMARY KEY, -- 自動で増加するID
+    task VARCHAR(255) NOT NULL, -- やる事の内容
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 登録した日時、自動で現在時刻を取得
+    importance INTEGER NOT NULL CHECK (importance BETWEEN 1 AND 4), -- 重要度、1から4までの範囲で制約
+    memo TEXT -- メモ
+);
+
+-- テーブルの作成結果を確認（任意で実行）
+SELECT * FROM todo_items;
